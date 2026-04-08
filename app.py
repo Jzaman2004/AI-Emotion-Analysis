@@ -41,6 +41,87 @@ SYSTEM_PROMPT = (
     "RULES: 1. All 12 emotion percentages MUST sum to exactly 100. 2. dominant_emotion must be the key with the highest integer value. If tie, pick first alphabetically. 3. If confidence is low, distribute evenly or default to neutral — but still sum to 100. 4. Output ONLY the JSON object."
 )
 
+EXPLANATION_PROMPT = (
+    "You are an ethical facial expression analyst. Based on the same image and the dominant emotion label, explain why the image likely matches that emotion. "
+    "Be concrete and image-based: name the visible facial cues you can infer, such as mouth shape, eyebrow position, eye openness, tears, cheek tension, jaw tension, forehead tension, gaze direction, or overall expression, and explain how those cues support the label. "
+    "Do not mention percentages, probabilities, model internals, or generic filler like 'the model is likely.' Write as a direct explanation of the visible face. Keep it to 2-3 short sentences. Return ONLY a valid JSON object with this structure: "
+    '{"analysis_explanation": string}'
+)
+
+EXPLANATION_RETRY_PROMPT = (
+    "You are rewriting a weak facial-expression explanation. The output must describe only the visible evidence in the image that supports the dominant emotion. "
+    "Use concrete facial cues such as eyebrows, eyes, tears, mouth shape, jaw tension, cheeks, forehead, or gaze. "
+    "Do not mention scores, percentages, ranks, confidence, or generic summary phrases like 'came out on top' or 'supporting signals.' "
+    "Write exactly 2 short sentences that sound like image observation, not analysis metadata. Return ONLY a valid JSON object with this structure: "
+    '{"analysis_explanation": string}'
+)
+
+SUMMARY_PHRASES = (
+    "came out on top",
+    "supporting signals",
+    "strongest relative signal",
+    "mixed expression",
+    "result leans",
+    "relative pattern",
+    "best-fit label",
+    "next at",
+    "follows at",
+)
+
+
+def explanation_looks_like_score_summary(text: str) -> bool:
+    lowered = text.lower()
+    if "%" in lowered:
+        return True
+    return any(phrase in lowered for phrase in SUMMARY_PHRASES)
+
+
+def request_analysis_explanation(client: Groq, image_data_url: str, dominant_emotion: str) -> str:
+    prompts = [EXPLANATION_PROMPT, EXPLANATION_RETRY_PROMPT]
+
+    for attempt, prompt in enumerate(prompts, start=1):
+        explanation_completion = client.chat.completions.create(
+            model=MODEL_NAME,
+            temperature=0,
+            max_tokens=280,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": prompt},
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": (
+                                f"The dominant emotion is {dominant_emotion}. Give the visible facial evidence that explains why this image matches that label. "
+                                "Make the answer sound like an observation of the face itself."
+                            ),
+                        },
+                        {"type": "image_url", "image_url": {"url": image_data_url}},
+                    ],
+                },
+            ],
+        )
+
+        explanation_content = (explanation_completion.choices[0].message.content or "").strip()
+        explanation_json = parse_model_json(explanation_content)
+        analysis_explanation = ""
+        if isinstance(explanation_json, dict):
+            analysis_explanation = explanation_json.get("analysis_explanation", "")
+            if not isinstance(analysis_explanation, str):
+                analysis_explanation = ""
+
+        analysis_explanation = analysis_explanation.strip()
+        if analysis_explanation and not explanation_looks_like_score_summary(analysis_explanation):
+            return analysis_explanation
+
+        app.logger.warning(
+            "Explanation attempt %s returned score-summary style text; retrying with stricter prompt.",
+            attempt,
+        )
+
+    raise ValueError("Model did not return a usable explanation for the dominant emotion.")
+
 
 def error_response(message: str, status_code: int):
     return jsonify({"error": message}), status_code
@@ -197,9 +278,12 @@ def analyze_with_groq(image_data_url: str) -> Dict:
     normalized = normalize_emotions(raw_emotions)
     dominant_emotion = compute_dominant_emotion(normalized)
 
+    analysis_explanation = request_analysis_explanation(client, image_data_url, dominant_emotion)
+
     return {
         "emotions": normalized,
         "dominant_emotion": dominant_emotion,
+        "analysis_explanation": analysis_explanation,
     }
 
 
@@ -228,6 +312,7 @@ def analyze():
                 "image_data": image_data_url,
                 "emotions": model_output["emotions"],
                 "dominant_emotion": model_output["dominant_emotion"],
+                "analysis_explanation": model_output["analysis_explanation"],
             }
         )
     except OverflowError as exc:

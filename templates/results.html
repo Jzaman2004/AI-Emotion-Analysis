@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Emotion Analysis Results</title>
-    <link rel="stylesheet" href="/static/style.css?v=4" />
+    <link rel="stylesheet" href="/static/style.css?v=5" />
 </head>
 <body data-page="results">
     <div class="app-shell">
@@ -28,16 +28,21 @@
             </section>
 
             <section class="card metrics-group">
-                <h2>Emotion Scores (0-100%)</h2>
+                <h2>Emotion Scores</h2>
                 <div class="metrics-columns">
                     <div id="emotionListLeft" class="emotion-list"></div>
                     <div id="emotionListRight" class="emotion-list"></div>
                 </div>
             </section>
+
+            <section class="card explanation-card">
+                <h2>What the Model Saw</h2>
+                <textarea id="analysisExplanation" class="analysis-explanation" rows="3" readonly aria-label="Short explanation of the analysis result"></textarea>
+            </section>
         </main>
     </div>
 
     <div id="toast" class="toast hidden" role="alert"></div>
-    <script src="/static/script.js?v=4" defer></script>
+    <script src="/static/script.js?v=5" defer></script>
 </body>
 </html>

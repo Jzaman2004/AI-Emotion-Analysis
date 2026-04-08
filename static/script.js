@@ -206,6 +206,7 @@ function initResultsPage() {
     const resultImage = document.getElementById("resultImage");
     const dominantEmotion = document.getElementById("dominantEmotion");
     const dominantPanel = document.getElementById("dominantPanel");
+    const analysisExplanation = document.getElementById("analysisExplanation");
 
     const raw = sessionStorage.getItem(ANALYSIS_KEY);
     if (!raw) {
@@ -233,6 +234,10 @@ function initResultsPage() {
     dominantEmotion.textContent = formatEmotionLabel(dominant);
     dominantPanel.classList.add("highlight");
     renderEmotionRows(emotions);
+
+    if (analysisExplanation) {
+        analysisExplanation.value = data.analysis_explanation || "No short explanation was generated for this result.";
+    }
 
     if (retryBtn) {
         retryBtn.addEventListener("click", () => {
