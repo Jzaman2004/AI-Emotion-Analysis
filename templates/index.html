@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Facial Emotion Recognition</title>
+    <link rel="stylesheet" href="/static/style.css?v=4" />
+</head>
+<body data-page="capture">
+    <div class="app-shell">
+        <header class="page-header">
+            <div class="header-row">
+                <h1>AI Facial Emotion Recognition Demo</h1>
+                <button id="themeToggle" class="btn-theme" type="button" aria-label="Toggle dark mode">Dark Mode</button>
+            </div>
+        </header>
+
+        <main class="card">
+            <section class="camera-section">
+                <h2>Capture Screen</h2>
+                <div class="video-frame" id="videoFrame">
+                    <video id="cameraFeed" autoplay playsinline muted></video>
+                    <canvas id="captureCanvas" class="hidden"></canvas>
+                </div>
+                <div class="actions-row">
+                    <button id="captureBtn" class="btn-primary" type="button">Capture &amp; Analyze</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay hidden" aria-live="polite" aria-busy="true">
+        <div class="loading-card">
+            <svg class="spinner" viewBox="0 0 50 50" role="img" aria-label="Loading">
+                <circle cx="25" cy="25" r="20"></circle>
+            </svg>
+            <p>Processing... AI is analyzing facial cues.</p>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden" role="alert"></div>
+    <script src="/static/script.js?v=4" defer></script>
+</body>
+</html>

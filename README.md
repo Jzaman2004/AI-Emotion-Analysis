@@ -37,3 +37,22 @@ This repository contains the complete codebase, statistical analysis pipeline, a
 2. Emotion-specific benchmarks are required prior to institutional adoption.
 3. Demographic fairness audits remain essential across diverse populations.
 4. Automated decision-making for complex emotions should be restricted until accuracy exceeds 70% with narrow confidence intervals.
+
+## Demo App Setup
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+Set `GROQ_API_KEY` in `.env`.
+
+## Run
+
+```bash
+python app.py
+```
+
+Open `http://127.0.0.1:5000` in your browser.

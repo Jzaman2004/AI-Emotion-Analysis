@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emotion Analysis Results</title>
+    <link rel="stylesheet" href="/static/style.css?v=4" />
+</head>
+<body data-page="results">
+    <div class="app-shell">
+        <header class="page-header">
+            <div class="header-row">
+                <h1>Emotion Distribution Results</h1>
+                <button id="themeToggle" class="btn-theme" type="button" aria-label="Toggle dark mode">Dark Mode</button>
+            </div>
+            <p>Poster-aligned probability profile from a single-frame facial analysis.</p>
+        </header>
+
+        <main class="results-grid">
+            <section class="card image-card">
+                <h2>Captured Frame</h2>
+                <img id="resultImage" alt="Captured face" class="result-image" />
+                <div class="dominant-panel" id="dominantPanel">
+                    <span class="label">Dominant Emotion</span>
+                    <span class="value mono" id="dominantEmotion">-</span>
+                </div>
+                <button id="retryBtn" class="btn-secondary" type="button">Retry Analysis</button>
+            </section>
+
+            <section class="card metrics-group">
+                <h2>Emotion Scores (0-100%)</h2>
+                <div class="metrics-columns">
+                    <div id="emotionListLeft" class="emotion-list"></div>
+                    <div id="emotionListRight" class="emotion-list"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="toast" class="toast hidden" role="alert"></div>
+    <script src="/static/script.js?v=4" defer></script>
+</body>
+</html>
