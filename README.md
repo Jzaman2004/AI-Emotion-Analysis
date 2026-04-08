@@ -7,10 +7,6 @@
 ## 📖 Overview
 This repository contains the complete codebase, statistical analysis pipeline, and results for my research on **benchmarking Transformer-Based AI (TB-AI) for facial emotion recognition**. As AI emotion recognition enters high-stakes domains (educational monitoring, digital safety), this study evaluates the reliability with which open-weight vision-language models classify 12 target emotions across basic and complex categories.
 
-🔗 **Interactive Demo:** `demo/README.md`  
-📄 **Conference Poster:** `poster/` directory  
-📊 **Statistical Results:** `results/` directory  
-
 ## 🎯 Research Objectives & Hypotheses
 - **H1 (Basic vs. Complex Accuracy):** TB-AI will demonstrate significantly higher classification accuracy for basic, visually distinct emotions compared to complex, socially nuanced emotions.
 - **H2 (Confidence Calibration):** Model confidence scores will positively correlate with classification correctness for basic emotions but show weak/null correlation for complex emotions.
